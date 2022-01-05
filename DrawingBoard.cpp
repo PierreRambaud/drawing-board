@@ -105,6 +105,4 @@ void DrawingBoard::loop() {
   }
 
   drawPoints();
-
-  delay(20);
 }

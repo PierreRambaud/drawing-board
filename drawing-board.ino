@@ -1,11 +1,16 @@
+/**
+If not configured in your lv_conf.h, please uncomment
+
+#define LV_HOR_RES_MAX 320
+#define LV_VER_RES_MAX 240
+#define LV_TICK_CUSTOM 1
+*/
+
 #include "M5Core2.h"
 #include "lvgl.h"
 #include "DrawingBoard.h"
 
-#define DISP_HOR_RES 320
-#define DISP_VER_RES 240
-
-TFT_eSPI tft = TFT_eSPI(DISP_HOR_RES, DISP_VER_RES);
+TFT_eSPI tft = TFT_eSPI(LV_HOR_RES_MAX, LV_VER_RES_MAX);
 DrawingBoard drawing_board = DrawingBoard(tft);
 
 static lv_disp_draw_buf_t draw_buf;
@@ -13,10 +18,11 @@ static lv_disp_draw_buf_t draw_buf;
 void tft_lv_initialization() {
   lv_init();
 
-  static lv_color_t buf1[(DISP_HOR_RES * DISP_VER_RES) / 10]; /*Declare a buffer for 1/10 screen size*/
-  static lv_color_t buf2[(DISP_HOR_RES * DISP_VER_RES) / 10]; // second buffer is optionnal
 
-  lv_disp_draw_buf_init(&draw_buf, buf1, buf2, (DISP_HOR_RES * DISP_VER_RES) / 10); // Initialize `disp_buf` display buffer with the buffer(s). With only one buffer use NULL instead buf_2
+  static lv_color_t buf1[(LV_HOR_RES_MAX * LV_VER_RES_MAX) / 10]; /*Declare a buffer for 1/10 screen size*/
+  static lv_color_t buf2[(LV_HOR_RES_MAX * LV_VER_RES_MAX) / 10]; // second buffer is optionnal
+
+  lv_disp_draw_buf_init(&draw_buf, buf1, buf2, (LV_HOR_RES_MAX * LV_VER_RES_MAX) / 10); // Initialize `disp_buf` display buffer with the buffer(s). With only one buffer use NULL instead buf_2
 
   tft.begin();        // TFT init
   tft.setRotation(1); // 1=horizontal 3=upside down 0=left 2=right
@@ -42,14 +48,16 @@ void init_disp_driver() {
   lv_disp_drv_init(&disp_drv);       /*Basic initialization*/
   disp_drv.flush_cb = my_disp_flush; /*Set your driver function*/
   disp_drv.draw_buf = &draw_buf;     /*Assign the buffer to the display*/
-  disp_drv.hor_res = DISP_HOR_RES;   /*Set the horizontal resolution of the display*/
-  disp_drv.ver_res = DISP_VER_RES;   /*Set the vertical resolution of the display*/
+  disp_drv.hor_res = LV_HOR_RES_MAX;   /*Set the horizontal resolution of the display*/
+  disp_drv.ver_res = LV_VER_RES_MAX;   /*Set the vertical resolution of the display*/
   lv_disp_drv_register(&disp_drv);   /*Finally register the driver*/
 }
 
+
 void setup() {
-  init_disp_driver();
   tft_lv_initialization();
+
+  init_disp_driver();
 
   drawing_board.clear();
 }
