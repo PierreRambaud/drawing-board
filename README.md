@@ -1,3 +1,3 @@
 # Drawing Board
 
-Trying to port in C with [lvgl](https://github.com/lvgl/lvgl) the DrawingBoard micropython program provides by UI Flow for the M5Core2.
+Trying to port the DrawingBoard micropython program provides by UI Flow for the M5Core2 in C with [lvgl 8](https://github.com/lvgl/lvgl).
