@@ -48,6 +48,7 @@ void init_disp_driver() {
 }
 
 void setup() {
+  init_disp_driver();
   tft_lv_initialization();
 
   drawing_board.clear();
