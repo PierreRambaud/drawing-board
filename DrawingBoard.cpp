@@ -1,7 +1,7 @@
-#include "DrawingBoard.h"
-
 #include <M5Core2.h>
 #include <lvgl.h>
+
+#include "DrawingBoard.h"
 
 lv_obj_t* drawing_label(char* title, int32_t x, int32_t y) {
   lv_obj_t* label = lv_label_create(lv_scr_act());
@@ -61,8 +61,7 @@ void DrawingBoard::changeColor() {
     _color = 0;
   }
 
-  lv_obj_set_style_text_color(_color_label, lv_color_hex(getColor()),
-                              LV_STATE_ANY);
+  lv_obj_set_style_text_color(_color_label, lv_color_hex(getColor()), LV_STATE_ANY);
 }
 
 void DrawingBoard::changeSize() {
@@ -87,7 +86,7 @@ void DrawingBoard::drawPoints() {
   }
 }
 
-void DrawingBoard::clearBoard() {
+void DrawingBoard::clear() {
   _tft->fillScreen(TFT_BLACK);
 
   _color = 0;
@@ -102,7 +101,7 @@ void DrawingBoard::loop() {
   } else if (M5.BtnB.isPressed()) {
     changeSize();
   } else if (M5.BtnC.isPressed()) {
-    clearBoard();
+    clear();
   }
 
   drawPoints();

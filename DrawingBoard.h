@@ -3,6 +3,7 @@
 class DrawingBoard {
  public:
   DrawingBoard(TFT_eSPI tft);
+  void clear();
   void loop();
 
  private:
@@ -19,7 +20,6 @@ class DrawingBoard {
   int32_t getColor();
   void changeColor();
   void changeSize();
-  void clearBoard();
   void drawPoint(int32_t x, int32_t y);
 
   void drawPoints();
