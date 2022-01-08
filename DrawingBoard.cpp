@@ -3,56 +3,62 @@
 
 #include "DrawingBoard.h"
 
-lv_obj_t* drawing_label(char* title, int32_t x, int32_t y) {
-  lv_obj_t* label = lv_label_create(lv_scr_act());
-  lv_label_set_recolor(label, true);
-  lv_label_set_text(label, title);
-  lv_obj_set_x(label, x);
-  lv_obj_set_y(label, y);
-
-  return label;
-}
-
-char* writeSize(int32_t size) {
-  char buf[8];
-  sprintf(buf, "Size: %d", size);
-
-  return buf;
-}
-
-DrawingBoard::DrawingBoard(TFT_eSPI tft) {
+DrawingBoard::DrawingBoard(M5Display& tft) {
   _size = 5;
   _color = 0;
+}
 
-  _color_label = drawing_label("Color", 50, 220);
-  _size_label = drawing_label(writeSize(_size), 145, 220);
-  _clear_label = drawing_label("Clear", 235, 220);
+static lv_style_t style_color_label;
+static lv_style_t style_label;
+
+void DrawingBoard::setup() {
+  _tft.fillScreen(TFT_BLACK);
+
+  lv_style_set_text_color(&style_color_label, lv_color_hex3(getColor()));
+  lv_style_set_text_color(&style_label, lv_color_white());
+
+  lv_obj_t* _color_label = lv_label_create(lv_scr_act());
+  lv_label_set_text(_color_label, "Color");
+  lv_obj_set_pos(_color_label, 50, 220);
+  lv_obj_add_style(_color_label, &style_color_label, 0);
+
+  lv_obj_t* _size_label = lv_label_create(lv_scr_act());
+  lv_label_set_text_fmt(_size_label, "Size: %d", _size);
+  lv_obj_set_pos(_size_label, 145, 220);
+  lv_obj_add_style(_size_label, &style_label, 0);
+
+  lv_obj_t* _clear_label = lv_label_create(lv_scr_act());
+  lv_label_set_text(_clear_label, "Clear");
+  lv_obj_set_pos(_clear_label, 235, 220);
+  lv_obj_add_style(_clear_label, &style_label, 0);
 }
 
 int32_t DrawingBoard::getColor() {
   switch (_color) {
     case 1:
-      return TFT_GREEN;
+      return GREEN;
     case 2:
-      return TFT_BLUE;
+      return BLUE;
     case 3:
-      return TFT_RED;
+      return RED;
     case 4:
-      return TFT_YELLOW;
+      return YELLOW;
     case 5:
-      return TFT_PINK;
+      return PINK;
     case 6:
-      return TFT_CYAN;
+      return CYAN;
     case 7:
-      return TFT_ORANGE;
+      return ORANGE;
     default:
-      return TFT_WHITE;
+      return BLUE;
   }
 }
 
 void DrawingBoard::drawPoint(int32_t x, int32_t y) {
-  _tft->drawCircle(x, y, _size, getColor());
-  _tft->fillCircle(x, y, _size, getColor());
+  _tft.drawCircle(x, y, _size, getColor());
+  _tft.fillCircle(x, y, _size, getColor());
+
+  Serial.printf("Draw point: %d, %d\r\n", x, y);
 }
 
 void DrawingBoard::changeColor() {
@@ -61,7 +67,10 @@ void DrawingBoard::changeColor() {
     _color = 0;
   }
 
-  lv_obj_set_style_text_color(_color_label, lv_color_hex(getColor()), LV_STATE_ANY);
+  lv_style_set_text_color(&style_color_label, lv_color_hex3(getColor()));
+  lv_obj_report_style_change(&style_color_label);
+
+  Serial.printf("Color changed: %d\r\n", _color);
 }
 
 void DrawingBoard::changeSize() {
@@ -70,7 +79,9 @@ void DrawingBoard::changeSize() {
     _size = 5;
   }
 
-  lv_label_set_text(_size_label, writeSize(_size));
+  // lv_label_set_text_fmt(_size_label, "Size: %d", _size);
+  // lv_obj_set_pos(_size_label, 145, 120);
+  Serial.printf("Size changed: %d\r\n", _size);
 }
 
 void DrawingBoard::drawPoints() {
@@ -87,7 +98,7 @@ void DrawingBoard::drawPoints() {
 }
 
 void DrawingBoard::clear() {
-  _tft->fillScreen(TFT_BLACK);
+  _tft.fillScreen(TFT_BLACK);
 
   _color = 0;
   changeColor();
@@ -96,11 +107,11 @@ void DrawingBoard::clear() {
 }
 
 void DrawingBoard::loop() {
-  if (M5.BtnA.isPressed()) {
+  if (M5.BtnA.wasPressed()) {
     changeColor();
-  } else if (M5.BtnB.isPressed()) {
+  } else if (M5.BtnB.wasPressed()) {
     changeSize();
-  } else if (M5.BtnC.isPressed()) {
+  } else if (M5.BtnC.wasPressed()) {
     clear();
   }
 

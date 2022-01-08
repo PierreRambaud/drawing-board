@@ -2,12 +2,13 @@
 
 class DrawingBoard {
  public:
-  DrawingBoard(TFT_eSPI tft);
+  DrawingBoard(M5Display& tft);
+  void setup();
   void clear();
   void loop();
 
  private:
-  TFT_eSPI* _tft;
+  M5Display _tft;
 
  protected:
   int8_t _size;
