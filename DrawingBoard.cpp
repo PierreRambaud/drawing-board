@@ -3,34 +3,36 @@
 
 #include "DrawingBoard.h"
 
-DrawingBoard::DrawingBoard(M5Display& tft) {
+DrawingBoard::DrawingBoard() {
   _size = 5;
   _color = 0;
 }
 
 static lv_style_t style_color_label;
-static lv_style_t style_label;
+static lv_style_t style_size_label;
+static lv_style_t style_clear_label;
 
 void DrawingBoard::setup() {
-  _tft.fillScreen(TFT_BLACK);
-
   lv_style_set_text_color(&style_color_label, lv_color_hex3(getColor()));
-  lv_style_set_text_color(&style_label, lv_color_white());
+  lv_style_set_text_color(&style_size_label, lv_color_white());
+  lv_style_set_text_color(&style_clear_label, lv_color_white());
 
-  lv_obj_t* _color_label = lv_label_create(lv_scr_act());
+  _color_label = lv_label_create(lv_scr_act());
   lv_label_set_text(_color_label, "Color");
   lv_obj_set_pos(_color_label, 50, 220);
   lv_obj_add_style(_color_label, &style_color_label, 0);
 
-  lv_obj_t* _size_label = lv_label_create(lv_scr_act());
+  _size_label = lv_label_create(lv_scr_act());
   lv_label_set_text_fmt(_size_label, "Size: %d", _size);
   lv_obj_set_pos(_size_label, 145, 220);
-  lv_obj_add_style(_size_label, &style_label, 0);
+  lv_obj_add_style(_size_label, &style_size_label, 0);
 
-  lv_obj_t* _clear_label = lv_label_create(lv_scr_act());
+  _clear_label = lv_label_create(lv_scr_act());
   lv_label_set_text(_clear_label, "Clear");
   lv_obj_set_pos(_clear_label, 235, 220);
-  lv_obj_add_style(_clear_label, &style_label, 0);
+  lv_obj_add_style(_clear_label, &style_clear_label, 0);
+
+  clear();
 }
 
 int32_t DrawingBoard::getColor() {
@@ -50,13 +52,13 @@ int32_t DrawingBoard::getColor() {
     case 7:
       return ORANGE;
     default:
-      return BLUE;
+      return WHITE;
   }
 }
 
 void DrawingBoard::drawPoint(int32_t x, int32_t y) {
-  _tft.drawCircle(x, y, _size, getColor());
-  _tft.fillCircle(x, y, _size, getColor());
+  M5.Lcd.drawCircle(x, y, _size, getColor());
+  M5.Lcd.fillCircle(x, y, _size, getColor());
 
   Serial.printf("Draw point: %d, %d\r\n", x, y);
 }
@@ -79,8 +81,7 @@ void DrawingBoard::changeSize() {
     _size = 5;
   }
 
-  // lv_label_set_text_fmt(_size_label, "Size: %d", _size);
-  // lv_obj_set_pos(_size_label, 145, 120);
+  lv_label_set_text_fmt(_size_label, "Size: %d", _size);
   Serial.printf("Size changed: %d\r\n", _size);
 }
 
@@ -98,12 +99,10 @@ void DrawingBoard::drawPoints() {
 }
 
 void DrawingBoard::clear() {
-  _tft.fillScreen(TFT_BLACK);
-
-  _color = 0;
-  changeColor();
-  _size = 5;
-  changeSize();
+  M5.Lcd.fillScreen(TFT_BLACK);
+  lv_obj_report_style_change(&style_color_label);
+  lv_obj_report_style_change(&style_clear_label);
+  lv_label_set_text_fmt(_size_label, "Size: %d", _size);
 }
 
 void DrawingBoard::loop() {

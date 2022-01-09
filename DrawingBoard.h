@@ -2,13 +2,10 @@
 
 class DrawingBoard {
  public:
-  DrawingBoard(M5Display& tft);
+  DrawingBoard();
   void setup();
   void clear();
   void loop();
-
- private:
-  M5Display _tft;
 
  protected:
   int8_t _size;
